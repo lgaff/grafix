@@ -1,14 +1,15 @@
 # grafix
 
-A Clojure library designed to ... well, that part is up to you.
+Me Mucking around with lwjgl via Clj. Draws pretty colored squares.
 
 ## Usage
 
-FIXME
+U/J increments/decrements the red amount
+I/K for green
+O/L for blue
+
+Click and drag with the mouse to draw a square. Rejoice that your life is complete.
 
 ## License
 
-Copyright © 2014 FIXME
-
-Distributed under the Eclipse Public License either version 1.0 or (at
-your option) any later version.
+Ha.
