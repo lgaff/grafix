@@ -2,10 +2,10 @@
   (:import (org.lwjgl.opengl Display DisplayMode GL11)
            (org.lwjgl.util.glu GLU)
            (org.lwjgl LWJGLException))
-  (:require [grafix.input :as input]))
-
+  (:require [grafix.input :as input]
+            [grafix.draw :as draw]))
+(-main)
 (def MAX_FPS 60)
-
 (defn init-gl []
   (def gl-state (ref {:time (/ (System/nanoTime) 1000000)
                       :fps 0.0}))
@@ -24,42 +24,37 @@
 
 
 (defn render-gl []
-    (GL11/glClear (bit-or GL11/GL_COLOR_BUFFER_BIT GL11/GL_DEPTH_BUFFER_BIT))
+  (GL11/glClear (bit-or GL11/GL_COLOR_BUFFER_BIT GL11/GL_DEPTH_BUFFER_BIT))
     ;; Render GL here
   (Display/setTitle (format "FPS: %.2f" (:fps @gl-state)))
-    (GL11/glColor3f 0.8 0.3 0.3)
-    (GL11/glBegin GL11/GL_POLYGON)
-    (do
-      (GL11/glVertex2f 100 100)
-      (GL11/glVertex2f 300 100)
-      (GL11/glVertex2f 300 300)
-      (GL11/glVertex2f 100 300)
-      (GL11/glVertex2f 50 200))
-    (GL11/glEnd))
+  (draw/render-geometry))
 
 (defn update-fps []
   (if (> (time-delta) 0)
     (float (/ 1000 (time-delta)))
     0.0))
-(defn run []
 
+(defn run []
   (try
     (do
       (Display/setDisplayMode (DisplayMode. 800 600))
       (Display/create))
     (catch LWJGLException e ""))
-  (init-gl)
-  (while (not (Display/isCloseRequested))
-    (render-gl)
-    (input/poll-input)
-    (Display/sync MAX_FPS)
-    (Display/update)
-    (dosync (ref-set gl-state
-                     (assoc @gl-state
-                       :time (get-time)
+  (do
+    (init-gl)
+    (input/init-input)
+    (draw/init-draw)
+    (while (not (Display/isCloseRequested))
+      (render-gl)
+      (input/poll-input)
+      (Display/sync MAX_FPS)
+      (Display/update)
+      (dosync (ref-set gl-state
+                       (assoc @gl-state
+                         :time (get-time)
 
-                       :fps (update-fps)))))
-  (Display/destroy))
+                         :fps (update-fps)))))
+    (Display/destroy)))
 
 (defn -main [& args]
   (println "OpenGL demonstration and tutorials")
